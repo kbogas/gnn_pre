@@ -1,0 +1,82 @@
+16/12/2019
+
+This was made to create the needed experimental files for DDIs predictions using BIOBERT (and not).
+I used the MONGODB DRUGBANKS collection from the local computer in NCSR.
+
+
+Initially the stats were the following:
+
+DB 5.1.3: 
+
+2641889 ALL | 1392809 (52.72 %) UNIQUE DDIS.
+OUT OF THEM, IN DB 5.0.3 WERE: 236174 (16.96 %)
+SO THE NEW ARE ACTUALLY: 1156635 (83.04 %)
+
+DB 5.0.3: 
+581055 ALL | 296326 (51.00 %) UNIQUE DDIS. 
+OUT OF THEM, IN DB 5.1.3: 236174 (79.70 %) 
+SO THE DIFFERENT ARE: 60152 (20.30 %)
+
+
+We are focusing on UNIQUE drug pairs sorted by name of the first of the pair.
+
+The following files were created:
+
+
+- train_OLD_STR_ALL.txt
+Comma separated values in the form h, r, t. No index or header.
+r = 4 for all relations and h,t are strings with their DBids.
+
+296326 from the unique drug pairs from 5.0.3
+
+
+- test_CLEAN_STR_ALL.txt
+Comma separated values in the form h, r, t. No index or header.
+r = 4 for all relations and h,t are strings with their DBids.
+
+1156635 from the unique drug pairs from 5.1.3 not found in 5.0.3
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ BIOBERT ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+We utilize biobert to get embeddings for 12112 unique drugs.
+We keep only the drug pairs that have embeddings for both drugs.
+There are 3679 resulting unique drugs.
+
+
+- train_OLD_STR_BIOBERT.txt (5588 were dropped from the previous train)
+Comma separated values in the form h, r, t. No index or header.
+r = 4 for all relations and h,t are strings with their DBids.
+
+290722 from the unique drug pairs from 5.0.3 that have both embeddings for both drugs as fetched by BIOBERT
+
+
+- test_CLEAN_STR_BIOBERT.txt (152468 were dropped from the previous test)
+Comma separated values in the form h, r, t. No index or header.
+r = 4 for all relations and h,t are strings with their DBids.
+
+1004167 from the unique drug pairs from 5.1.3 not found in 5.0.3, that have both embeddings for both drugs as fetched by BIOBERT
+
+- DB_Bert_Emb_STR.csv
+The corresponding embedding file  containing only the 3679 unique drugs found from the previous work.
+769 columns (with header, no index). The last column is the corresponding DB_ID.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ BIOBERT GNN ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Will re-create the train/test/embeddings file to be used by the torchkge platform.
+
+- train_OLD_INT_BIOBERT.txt
+The same as train_OLD_STR_BIOBERT.txt, were h, t have the integer mapping for the DB_ID. It starts from 0 and ends in 3678.
+
+
+- test_CLEAN_INT_BIOBERT.txt
+The same as test_CLEAN_STR_BIOBERT.txt, were h, t have the integer mapping for the DB_ID. It starts from 0 and ends in 3678.
+
+
+- DB_Bert_Emb_INT.csv
+The corresponding embedding file with the integer mapping. All other drugs have been dropped. 769 columns (with header, no index). The last column is the incremental ID.
+
+-DB_Bert_Emb_INT__MAPPING.csv
+The .csv file containing the mapping from the DB_ID to the incremental ID.
+Comma separated, 2 columns with header (no index), ["DB_ID", "INDEX"]
+
+THESE HAVE BEEN MOVED IN THE SUBFOLDER "CLEAN_DB_FOR_GNN" and renamed to train, test for cleaner interface.
